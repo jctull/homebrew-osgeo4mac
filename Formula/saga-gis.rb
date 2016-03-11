@@ -1,8 +1,8 @@
 class SagaGis < Formula
   homepage "http://saga-gis.org"
-  url "https://downloads.sourceforge.net/project/saga-gis/SAGA%20-%202.1/SAGA%202.1.2/saga_2.1.2.tar.gz"
-  sha1 "9dddd3e03bd5f640fedd318ee8ff187785745e86"
-
+  url "https://downloads.sourceforge.net/project/saga-gis/SAGA%20-%202.2/SAGA%202.2.3/saga_2.2.3.tar.gz"
+  sha256 "f26591c097c8766df9db266bf50e1b38a5bebe0119b44a9b70ae793d0d8bade3"
+  
   bottle do
     root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
     sha1 "2e1e3c6f665d603d9dbac2f63e8b6f393d8130fb" => :mavericks
@@ -12,7 +12,7 @@ class SagaGis < Formula
   head "svn://svn.code.sf.net/p/saga-gis/code-0/trunk/saga-gis"
 
   option "with-app", "Build SAGA.app Package"
-  option "with-liblas", "Build with internal libLAS 1.2 support"
+#  option "with-liblas", "Build with internal libLAS 1.2 support"
 
   depends_on :automake
   depends_on :autoconf
@@ -20,7 +20,7 @@ class SagaGis < Formula
   depends_on "gdal"
   depends_on "jasper"
   depends_on "proj"
-  depends_on "wxmac-mono"
+  depends_on "wxmac"
   depends_on "unixodbc" => :recommended
   depends_on "libharu" => :recommended
   # Vigra support builds, but dylib in saga shows 'failed' when loaded
@@ -36,58 +36,58 @@ class SagaGis < Formula
     sha1 "1ff67c6d600dd161684d3e8b33a1d138c65b00f4"
   end
 
-  resource "projects" do
-    url "http://trac.osgeo.org/proj/export/2409/branches/4.8/proj/src/projects.h"
-    sha1 "867367a8ef097d5ff772b7f50713830d2d4bc09c"
-    version "4.8.0"
-  end
+#  resource "projects" do
+#    url "http://trac.osgeo.org/proj/export/2409/branches/4.8/proj/src/projects.h"
+#    sha1 "df11e80bc6c3d8cd96fcfb1c1db48772f31a4ee6"
+#    version "4.8.0"
+#  end
+#
+#  resource "liblas" do
+#    url "https://github.com/libLAS/libLAS/archive/1.2.1.tar.gz"
+#    sha256 "f26591c097c8766df9db266bf50e1b38a5bebe0119b44a9b70ae793d0d8bade3"
+#  end
 
-  resource "liblas" do
-    url "https://github.com/libLAS/libLAS/archive/1.2.1.tar.gz"
-    sha1 "24a775484285d4e35eb8034bf298f740d7123569"
-  end
-
-  resource "liblas_patch" do
-    # Fix for error of conflicting types for '_GTIFcalloc' between gdal 1.11 and libgeotiff
-    # https://github.com/libLAS/libLAS/issues/33
-    # This is an attempt to do it for old liblas 1.2.1
-    url "https://gist.githubusercontent.com/dakcarto/f73717dac2777262d0f0/raw/a931380c41529767544a4c0dcc645b21f9b395e7/saga-gis_liblas.diff"
-    sha1 "b76ac09e59099e3cc2365630c02efe0f335f3964"
-  end
+#  resource "liblas_patch" do
+#    # Fix for error of conflicting types for '_GTIFcalloc' between gdal 1.11 and libgeotiff
+#    # https://github.com/libLAS/libLAS/issues/33
+#    # This is an attempt to do it for old liblas 1.2.1
+#    url "https://gist.githubusercontent.com/dakcarto/f73717dac2777262d0f0/raw/a931380c41529767544a4c0dcc645b21f9b395e7/saga-gis_liblas.diff"
+#    sha1 "b76ac09e59099e3cc2365630c02efe0f335f3964"
+#  end
 
   def install
-    (buildpath/"src/modules/projection/pj_proj4").install resource("projects")
+#    (buildpath/"src/modules/projection/pj_proj4").install resource("projects")
 
     # Need to remove unsupported libraries from various Makefiles
     # http://sourceforge.net/p/saga-gis/wiki/Compiling%20SAGA%20on%20Mac%20OS%20X
-    inreplace "src/saga_core/saga_gui/Makefile.am", "aui,base,", ""
-    inreplace "src/saga_core/saga_gui/Makefile.am", "propgrid,", ""
+#    inreplace "src/saga_core/saga_gui/Makefile.am", "aui,base,", ""
+#    inreplace "src/saga_core/saga_gui/Makefile.am", "propgrid,", ""
 
-    if build.with? "liblas"
-      # Saga still only works with liblas 1.2.1 (5 years old). Vendor in libexec
-      # see: http://sourceforge.net/p/saga-gis/discussion/354013/thread/823cbde1/
-      mktemp do
-        resource("liblas").stage do
-          # patch liblas
-          (Pathname.pwd).install resource("liblas_patch")
-          safe_system "/usr/bin/patch", "-g", "0", "-f", "-d", Pathname.pwd, "-p1", "-i", "saga-gis_liblas.diff"
-
-          args = %W[
-            --prefix=#{libexec}
-            --disable-dependency-tracking
-            --with-gdal=#{Formula["gdal"].opt_bin}/gdal-config
-            --with-geotiff=#{Formula["libgeotiff"].opt_prefix}
-          ]
-          system "autoreconf", "-i"
-          system "./configure", *args
-          system "make", "install"
-        end
-      end
-      ENV.prepend "CPPFLAGS", "-I#{libexec}/include"
-      ENV.prepend "LDFLAGS", "-L#{libexec}/lib"
-      # Find c lib interface for liblas
-      inreplace "configure.ac", "[las]", "[las_c]"
-    end
+#    if build.with? "liblas"
+#      # Saga still only works with liblas 1.2.1 (5 years old). Vendor in libexec
+#      # see: http://sourceforge.net/p/saga-gis/discussion/354013/thread/823cbde1/
+#      mktemp do
+#        resource("liblas").stage do
+#          # patch liblas
+#          (Pathname.pwd).install resource("liblas_patch")
+#          safe_system "/usr/bin/patch", "-g", "0", "-f", "-d", Pathname.pwd, "-p1", "-i", "saga-gis_liblas.diff"
+#
+#          args = %W[
+#            --prefix=#{libexec}
+#            --disable-dependency-tracking
+#            --with-gdal=#{Formula["gdal"].opt_bin}/gdal-config
+#            --with-geotiff=#{Formula["libgeotiff"].opt_prefix}
+#          ]
+#          system "autoreconf", "-i"
+#          system "./configure", *args
+#          system "make", "install"
+#        end
+#      end
+#      ENV.prepend "CPPFLAGS", "-I#{libexec}/include"
+#      ENV.prepend "LDFLAGS", "-L#{libexec}/lib"
+#      # Find c lib interface for liblas
+#      inreplace "configure.ac", "[las]", "[las_c]"
+#    end
 
     args = %W[
         --prefix=#{prefix}
