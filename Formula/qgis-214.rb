@@ -93,11 +93,8 @@ class Qgis214 < Formula
 
   # core processing plugin extras
   # see `postgis` and `grass` above
-<<<<<<< HEAD
+  # grass7 use grass-71 from rkrug/head-only
   depends_on "grass-71" if build.with? "grass7"
-=======
-  depends_on "grass-70" if build.with? "grass7"
->>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
   depends_on "orfeo-42" if build.with? "orfeo"
   depends_on "homebrew/science/r" => :optional
   depends_on "saga-gis" => :optional
@@ -285,7 +282,10 @@ class Qgis214 < Formula
 
     end
 
-<<<<<<< HEAD
+# GRASS workaround, create symlink 'grass70.sh' pointing at 'grass71'
+# in /usr/local/bin. This hack is not ideal, so please provide a more
+# elegant solution if you have one.
+#
 #    if opts.include? "with-grass7"
 #      begin
 #        inreplace app/"#{proc_algs}/grass7/Grass7Utils.py",
@@ -295,17 +295,6 @@ class Qgis214 < Formula
 #        puts "GRASS 7 GrassUtils already updated"
 #      end
 #    end
-=======
-    if opts.include? "with-grass7"
-      begin
-        inreplace app/"#{proc_algs}/grass7/Grass7Utils.py",
-                  "/Applications/GRASS-7.0.app/Contents/MacOS",
-                  HOMEBREW_PREFIX/"opt/grass-70/grass-base"
-      rescue Utils::InreplaceError
-        puts "GRASS 7 GrassUtils already updated"
-      end
-    end
->>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
 
     unless opts.include? "without-globe"
       osg = Formula["open-scene-graph"]
