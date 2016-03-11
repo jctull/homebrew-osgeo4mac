@@ -25,7 +25,11 @@ class Qgis214 < Formula
     brewed_python?
   end
 
+<<<<<<< HEAD
   head "https://github.com/qgis/QGIS.git", :branch => "master"
+=======
+  head "https://github.com/qgis/QGIS.git", :branch => "release-2_14"
+>>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
 
   option "enable-isolation", "Isolate .app's environment to HOMEBREW_PREFIX, to coexist with other QGIS installs"
   option "with-debug", "Enable debug build, which outputs info to system.log or console"
@@ -69,7 +73,11 @@ class Qgis214 < Formula
   depends_on "postgresql" => :recommended
 
   # core providers
+<<<<<<< HEAD
   depends_on "gdal-20"
+=======
+  depends_on "gdal"
+>>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
   depends_on "postgis" => :recommended
   depends_on "oracle-client-sdk" if build.with? "oracle"
   # TODO: add MSSQL third-party support formula?, :optional
@@ -93,7 +101,11 @@ class Qgis214 < Formula
 
   # core processing plugin extras
   # see `postgis` and `grass` above
+<<<<<<< HEAD
   depends_on "grass-71" if build.with? "grass7"
+=======
+  depends_on "grass-70" if build.with? "grass7"
+>>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
   depends_on "orfeo-42" if build.with? "orfeo"
   depends_on "homebrew/science/r" => :optional
   depends_on "saga-gis" => :optional
@@ -281,6 +293,7 @@ class Qgis214 < Formula
 
     end
 
+<<<<<<< HEAD
 #    if opts.include? "with-grass7"
 #      begin
 #        inreplace app/"#{proc_algs}/grass7/Grass7Utils.py",
@@ -290,6 +303,17 @@ class Qgis214 < Formula
 #        puts "GRASS 7 GrassUtils already updated"
 #      end
 #    end
+=======
+    if opts.include? "with-grass7"
+      begin
+        inreplace app/"#{proc_algs}/grass7/Grass7Utils.py",
+                  "/Applications/GRASS-7.0.app/Contents/MacOS",
+                  HOMEBREW_PREFIX/"opt/grass-70/grass-base"
+      rescue Utils::InreplaceError
+        puts "GRASS 7 GrassUtils already updated"
+      end
+    end
+>>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
 
     unless opts.include? "without-globe"
       osg = Formula["open-scene-graph"]
