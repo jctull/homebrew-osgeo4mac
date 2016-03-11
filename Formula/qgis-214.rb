@@ -25,11 +25,7 @@ class Qgis214 < Formula
     brewed_python?
   end
 
-<<<<<<< HEAD
   head "https://github.com/qgis/QGIS.git", :branch => "master"
-=======
-  head "https://github.com/qgis/QGIS.git", :branch => "release-2_14"
->>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
 
   option "enable-isolation", "Isolate .app's environment to HOMEBREW_PREFIX, to coexist with other QGIS installs"
   option "with-debug", "Enable debug build, which outputs info to system.log or console"
