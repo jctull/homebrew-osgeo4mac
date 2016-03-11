@@ -73,11 +73,7 @@ class Qgis214 < Formula
   depends_on "postgresql" => :recommended
 
   # core providers
-<<<<<<< HEAD
   depends_on "gdal-20"
-=======
-  depends_on "gdal"
->>>>>>> 6c06def64b8ff2683d1095aba4935a55de88c13c
   depends_on "postgis" => :recommended
   depends_on "oracle-client-sdk" if build.with? "oracle"
   # TODO: add MSSQL third-party support formula?, :optional
