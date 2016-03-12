@@ -17,7 +17,7 @@ class SagaGis < Formula
   depends_on :automake
   depends_on :autoconf
   depends_on :libtool
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on "jasper"
   depends_on "proj"
   depends_on "wxmac"
