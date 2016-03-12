@@ -21,7 +21,7 @@ class GdalEcwjp2 < Formula
 
   depends_on :macos => :lion # as per SDK docs
   depends_on EcwJp2Sdk
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   def gdal_clib
     gdal_lib = "#{Formula["gdal"].opt_lib}/libgdal.dylib"

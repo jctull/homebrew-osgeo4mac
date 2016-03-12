@@ -6,7 +6,7 @@ class Prepair < Formula
 
   depends_on "cmake" => :build
   depends_on "cgal"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   # Instead of lib or commandline exe, build both
   patch :DATA

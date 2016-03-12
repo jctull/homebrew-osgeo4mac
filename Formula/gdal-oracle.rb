@@ -4,7 +4,7 @@ class GdalOracle < Formula
   sha1 '25efd2bffdea2e841377ca8c1fd49d89d02ac87e'
 
   depends_on "oracle-client-sdk"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   def install
     oracle_opt = Formula['oracle-client-sdk'].opt_prefix

@@ -11,7 +11,7 @@ class MrsidSdk < Formula
   option "with-docs", "Intall documentation and examples for SDKs"
 
   # this is an odd one: only needs the share/gdal components
-  depends_on "gdal" => :build
+  depends_on "jctull/osgeo4mac/gdal" => :build
 
   def install
     # first strip unnecessary installs

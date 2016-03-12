@@ -18,7 +18,7 @@ class Mapcache12 < Formula
   depends_on "pixman" => :recommended
   depends_on "fcgi"
   depends_on "sqlite"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on "geos"
 
   if build.with? "tiff-cache"

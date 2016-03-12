@@ -18,7 +18,7 @@ class Orfeo42 < Formula
   depends_on "boost" if build.with? "external-boost"
   depends_on "homebrew/science/insighttoolkit" if build.with? "external-itk"
   depends_on :python => :optional
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on "qt"
   depends_on "muparser"
   depends_on "libkml"

@@ -64,7 +64,7 @@ class Mapserver64 < Formula
   depends_on "gd" => :optional unless build.head?
   depends_on "proj"
   depends_on "geos" => :recommended
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on :postgresql => :recommended
   depends_on :mysql => :optional
   depends_on "fcgi" => :recommended

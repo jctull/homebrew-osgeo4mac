@@ -13,7 +13,7 @@ class PgsqlOgrFdw < Formula
 
   # depends_on "pkg-config" => :build
   depends_on "postgis"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   def install
     ENV.deparallelize

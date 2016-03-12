@@ -31,7 +31,7 @@ class Grass64 < Formula
   depends_on "pkg-config" => :build
   depends_on "gettext"
   depends_on "readline"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on "libtiff"
   depends_on "unixodbc"
   depends_on "fftw"

@@ -8,7 +8,7 @@ class Hexer < Formula
   option "with-drawing", "Build Cairo-based SVG drawing"
 
   depends_on "cmake" => :build
-  depends_on "gdal" => :recommended
+  depends_on "jctull/osgeo4mac/gdal" => :recommended
   depends_on "cairo" if build.with? "drawing"
 
   def install

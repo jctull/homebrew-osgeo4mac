@@ -4,7 +4,7 @@ class GdalSosi < Formula
   sha1 "25efd2bffdea2e841377ca8c1fd49d89d02ac87e"
 
   depends_on "fyba"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   def install
     fyba_opt = Formula["fyba"].opt_prefix

@@ -4,7 +4,7 @@ class GdalMrsid < Formula
   sha1 "25efd2bffdea2e841377ca8c1fd49d89d02ac87e"
 
   depends_on "mrsid-sdk"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
 
   def install
     mrsid_sdk_opt = Formula['mrsid-sdk'].opt_prefix

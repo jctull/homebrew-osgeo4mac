@@ -20,7 +20,7 @@ class Pdal09dev < Formula
   depends_on :python # for PLang filters
   depends_on "numpy" => :python
   depends_on "libgeotiff"
-  depends_on "gdal"
+  depends_on "jctull/osgeo4mac/gdal"
   depends_on :postgresql => :recommended
   depends_on "laszip" => :recommended
   depends_on "msgpack" => :recommended
