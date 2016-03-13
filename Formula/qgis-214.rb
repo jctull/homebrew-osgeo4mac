@@ -119,7 +119,12 @@ class Qgis214 < Formula
     dev_fw.mkpath
     qsci_opt = Formula["qscintilla2"].opt_prefix
     args = std_cmake_args
-    args << "-DCMAKE_BUILD_TYPE=RelWithDebInfo" if build.with? "debug" # override
+    if build.with? "debug"
+      args << "-DCMAKE_BUILD_TYPE=RelWithDebInfo"  # override
+    else
+      args << "-DCMAKE_BUILD_TYPE=MinSizeRel"
+    end
+
     args += %W[
       -DBISON_EXECUTABLE=#{Formula["bison"].opt_bin}/bison
       -DENABLE_TESTS=FALSE
@@ -161,7 +166,10 @@ class Qgis214 < Formula
     end
 
     args << "-DPOSTGRES_CONFIG=#{Formula["postgresql"].opt_bin}/pg_config" if build.with? "postgresql"
-    args << "-DGRASS_PREFIX7=/usr/local/opt/grass-71/grass-7.1.svn" if build.with? "grass7"
+    if build.with? "grass7"
+      args << "-DGRASS_PREFIX7=/usr/local/opt/grass-71/grass-7.1.svn"
+      args << "-DGRASS_INCLUDE_DIR7=/usr/local/opt/grass-71/grass-7.1.svn/include"
+    end
 
     args << "-DWITH_GLOBE=#{build.with?("globe") ? "TRUE" : "FALSE"}"
     if build.with? "globe"
@@ -198,6 +206,10 @@ class Qgis214 < Formula
     # Update .app's bundle identifier, so Kyngchaos.com installer doesn't get confused
     inreplace prefix/"QGIS.app/Contents/Info.plist",
               "org.qgis.qgis2", "org.qgis.qgis2-hb#{build.head? ? "-dev" : ""}"
+
+    # Yet another fix for grass7, pointer to grass71
+    inreplace prefix/"QGIS.app/Contents/Resources/python/plugins/processing/algs/grass7/Grass7Utils.py",
+              "command = 'grass70 ' + Grass7Utils.grassMapsetFolder() ", "command = 'grass71 ' + Grass7Utils.grassMapsetFolder() "
 
     py_lib = lib/"python2.7/site-packages"
     py_lib.mkpath
