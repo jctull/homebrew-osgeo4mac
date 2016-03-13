@@ -161,7 +161,7 @@ class Qgis214 < Formula
     end
 
     args << "-DPOSTGRES_CONFIG=#{Formula["postgresql"].opt_bin}/pg_config" if build.with? "postgresql"
-    args << "-DGRASS_PREFIX7=#{"grass-71"}/grass-7.1.svn" if build.with? "grass7"
+    args << "-DGRASS_PREFIX7=/usr/local/opt/grass-71/grass-7.1.svn" if build.with? "grass7"
 
     args << "-DWITH_GLOBE=#{build.with?("globe") ? "TRUE" : "FALSE"}"
     if build.with? "globe"
