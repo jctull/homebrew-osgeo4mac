@@ -1,8 +1,11 @@
 Homebrew-osgeo4mac
 ==================
 
-_NOTE_: On March 28, 2014, this repository was moved from dakcarto's github 
-account to OSGeo's.
+_NOTE_: On March 28, 2014, the original repository was moved from dakcarto's github 
+account to OSGeo's. On March 10, 2016, the OSGeo repo was forked to provide a
+repo to provide a single repo for gdal-20, grass7, qgis-214. This was primarily for
+my (jctull) personal use. My ruby and homebrew coding is rudimentary, so there are
+some inelegant workarounds to make my life easier. Please feel free to improve things.
 
 Mac [homebrew][] formula tap for maintaining a STABLE work environment for the
 OSGeo.org geospatial toolset. This includes formulae that may not be specifically
@@ -17,46 +20,40 @@ are committed, the formulae removed from this tap.
 
 How do I install these formulae?
 --------------------------------
-Just `brew tap osgeo/osgeo4mac` and then `brew install <formula>`.
+Just `brew tap jctull/osgeo4mac` and then `brew install <formula>`.
 
-If you have _previously_ tapped the **dakcarto/osgeo4mac** repository do:
+If you have _previously_ tapped the **dakcarto/osgeo4mac** repository  or the
+**homebrew/osgeo4mac** repository do:
 
 ```
 brew untap dakcarto/osgeo4mac
-brew tap osgeo/osgeo4mac
+brew untap osgeo/osgeo4mac
+brew tap jctull/osgeo4mac
 brew tap --repair
 ```
+Further, I wanted my gdal to take precedence over **Homebrew/homebrew/gdal**, but
+simply pointing to **jctull/osgeo4mac/gdal-20** in my formulae was not working
+because homebrew traverses dependencies and was trying to install gdal from 
+core Homebrew that was woefully out of date. To make things work for me, I took
+all formulae that use gdal and put them in **jctull/osgeo4mac**, specifically
+pointed them at **jctull/osgeo4mac/gdal**, and then pinned my tap so it would
+shadow formulae from **Homebrew/homebrew** or elsewhere. You can do this with:
 
-Warnings such as the following can be **ignored**:
+````
+brew tap-pin jctull/osgeo4mac
+````
 
-  * _Warning_: Could not tap **osgeo/osgeo4mac/gdal** over **Homebrew/homebrew/gdal**
-
-Those warnings just indicate formulae in this tap that shadow formulae in the
-main Homebrew tap, and will not overwrite them. If the formula conflicts with
-one from the main Homebrew tap or another tap you can install directly with:
+You can install formula from the tap explicitly, once tapped, with:
 
 ```
-brew install osgeo/osgeo4mac/<formula>
+brew install jctull/osgeo4mac/<formula>
 ```
-
-**Important**: use the above method to install shadow formula(e) from this tap,
-if desired, _prior_ to installing formula that depend upon them. Since the
-conflicting formulae names are the same, formulae auto-installed via the
-`depends_on` statement will always default to the conflicting tap, not this one,
-i.e. conflicting formulae in this tap will _not_ be used when auto-installing.
 
 You can also install via URL:
 
 ```
-brew install https://raw.github.com/osgeo/homebrew-osgeo4mac/master/<formula>.rb
+brew install https://raw.github.com/jctull/homebrew-osgeo4mac/master/<formula>.rb
 ```
-
-How do I use the Brewfiles?
---------------------------------
-
-If you have used `brewfiles` from this tap before, take note that the command is
-no longer in Homebrew. As such, the previously available `brewfiles` have been
-removed from this tap.
 
 Docs
 ----
