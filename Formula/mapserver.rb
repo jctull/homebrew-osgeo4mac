@@ -1,8 +1,8 @@
 class Mapserver < Formula
   desc "Publish spatial data and interactive mapping apps to the web"
   homepage "http://mapserver.org/"
-  url "http://download.osgeo.org/mapserver/mapserver-6.2.2.tar.gz"
-  sha256 "79b81286dde030704f59a668a19e5b01af27bb35d05b3daf91cefe06ca29ffd9"
+  url "http://download.osgeo.org/mapserver/mapserver-7.0.1.tar.gz"
+  sha256 "2c9567e59ae3ebd99bb645740485be6a25798b8b57f93ca3413a3e0369a1bd8f"
 
   bottle do
     cellar :any
@@ -11,66 +11,52 @@ class Mapserver < Formula
     sha256 "28b3fbf520436359a81d6b0a6875c30cb6f8bdb147ebc14f5860f7cf2c61ad47" => :mountain_lion
   end
 
-  option "with-fastcgi", "Build with fastcgi support"
-  option "with-geos", "Build support for GEOS spatial operations"
   option "with-php", "Build PHP MapScript module"
   option "with-postgresql", "Build support for PostgreSQL as a data source"
+  option "with-kml", "Build support for kml"
+  option "with-python", "Build support for python"
+  option "with-cairo", "Build cairo support"
 
   env :userpaths
 
+  depends_on "cmake" => :build
+  depends_on "doxygen"
+  depends_on "fcgi"
   depends_on "freetype"
   depends_on "libpng"
+  depends_on "fribidi"
   depends_on "swig" => :build
   depends_on "giflib"
   depends_on "gd"
   depends_on "proj"
   depends_on "jctull/osgeo4mac/gdal"
-  depends_on "geos" => :optional
-  depends_on "postgresql" => :optional unless MacOS.version >= :lion
-  depends_on "fcgi" if build.with? "fastcgi"
+  depends_on "geos"
+  depends_on "libpqxx"
+  depends_on "harfbuzz"
+  depends_on "postgresql" => :optional
   depends_on "cairo" => :optional
-
-  # This patch can be removed when this is merged https://github.com/mapserver/mapserver/pull/5113
-  patch :DATA
 
   def install
     args = [
-      "--prefix=#{prefix}",
-      "--with-proj",
-      "--with-gdal",
-      "--with-ogr",
-      "--with-wfs"
+      "-DWITH-PROJ=ON",
+      "-DWITH-GDAL=ON",
+      "-DWITH-OGR=ON",
+      "-DWITH-CURL=ON",
+      "-DWITH-WFS=ON",
+      "-DWITH-GEOS=ON",
+      "-DWITH-FASTCGI=ON"
     ]
 
-    args << "--with-geos" if build.with? "geos"
-    args << "--with-php=/usr/bin/php-config" if build.with? "php"
-    args << "--with-cairo" if build.with? "cairo"
+    args << "-DWITH-PHP=ON" if build.with? "php"
+    args << "-DWITH-CAIRO=ON" if build.with? "cairo"
+    args << "-DWITH-POSTGIS=ON" if build.with? "postgresql"
+    args << "-DWITH-KML=ON" if build.with? "kml"
 
-    if build.with? "postgresql"
-      if MacOS.version >= :lion # Lion ships with PostgreSQL libs
-        args << "--with-postgis"
-      else
-        args << "--with-postgis=#{HOMEBREW_PREFIX}/bin/pg_config"
-      end
-    end
-
-    args << "--with-fastcgi=#{HOMEBREW_PREFIX}" if build.with? "fastcgi"
-
-    unless MacOS::CLT.installed?
-      inreplace "configure", "_JTOPDIR=`echo \"$_ACJNI_FOLLOWED\" | sed -e 's://*:/:g' -e 's:/[^/]*$::'`",
-                             "_JTOPDIR='#{MacOS.sdk_path}/System/Library/Frameworks/JavaVM.framework/Headers'"
-    end
-
-    system "./configure", *args
-    system "make"
-
-    install_args = []
-    install_args << "PHP_EXT_DIR=#{prefix}" if build.with? "php"
-    system "make", "install", *install_args
-
-    cd "mapscript/python" do
-      system "python", *Language::Python.setup_install_args(prefix)
-    end
+    mkdir "build" do
+      system "cmake","..", *std_cmake_args, *args
+      system "make"
+      system "make", "install"
+   end
   end
 
   def caveats; <<-EOS.undent
@@ -88,45 +74,3 @@ class Mapserver < Formula
     system "#{bin}/mapserver-config", "--version"
   end
 end
-
-__END__
---- a/mapscript/python/setup.py	2015-06-28 17:43:34.000000000 +0200
-+++ b/mapscript/python/setup.py	2015-06-28 17:47:16.000000000 +0200
-@@ -32,6 +32,11 @@
- except ImportError:
-     import popen2
-
-+def update_dirs(list1, list2):
-+    for v in list2:
-+        if v not in list1 and os.path.isdir(v):
-+            list1.append(v)
-+
- #
- # # Function needed to make unique lists.
- def unique(list):
-@@ -144,8 +149,12 @@
-         return get_config(option, config =self.mapserver_config)
-
-     def finalize_options(self):
-+        if isinstance(self.include_dirs, str):
-+            self.include_dirs = [path.strip() for path in self.include_dirs.strip().split(":")]
-         if self.include_dirs is None:
-             self.include_dirs = include_dirs
-+
-+        update_dirs(self.include_dirs, include_dirs)
-
-         includes =  self.get_mapserver_config('includes')
-         includes = includes.split()
-@@ -154,9 +163,13 @@
-                 if item[2:] not in include_dirs:
-                     self.include_dirs.append( item[2:] )
-
-+        if isinstance(self.library_dirs, str):
-+            self.library_dirs = [path.strip() for path in self.library_dirs.strip().split(":")]
-         if self.library_dirs is None:
-             self.library_dirs = library_dirs
-
-+        update_dirs(self.library_dirs, library_dirs)
-+
-         libs =  self.get_mapserver_config('libs')
-         self.library_dirs = self.library_dirs + [x[2:] for x in libs.split() if x[:2] == "-L"]

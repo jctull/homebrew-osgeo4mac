@@ -33,8 +33,7 @@ class Qgis214 < Formula
   option "without-postgresql", "Build without current PostgreSQL client"
   option "with-globe", "Build with Globe plugin, based upon osgEarth"
   option "without-postgis", "Build without extra PostGIS geospatial database extender"
-  option "without-grass", "Build without GRASS 6 integration plugin and Processing plugin support"
-  option "with-grass7", "Build with GRASS 7 for Processing plugin"
+  option "with-grass7", "Build with GRASS 7 Processing support"
   option "with-oracle", "Build extra Oracle geospatial database and raster support"
   option "with-orfeo", "Build extra Orfeo Toolbox for Processing plugin"
   option "with-r", "Build extra R for Processing plugin"
@@ -70,16 +69,9 @@ class Qgis214 < Formula
 
   # core providers
   depends_on "jctull/osgeo4mac/gdal"
-  depends_on "postgis" => :recommended
+  depends_on "jctull/osgeo4mac/postgis" => :recommended
   depends_on "oracle-client-sdk" if build.with? "oracle"
   # TODO: add MSSQL third-party support formula?, :optional
-
-  # core plugins (c++ and python)
-  if build.with? "grass"
-    depends_on "grass-64"
-    depends_on "gdal-grass64"
-    depends_on "gettext"
-  end
 
   if build.with? "globe"
     depends_on "open-scene-graph" => ["with-qt"]
@@ -92,9 +84,10 @@ class Qgis214 < Formula
   depends_on "qt-mysql" => :optional # for eVis plugin (non-functional in 2.x?)
 
   # core processing plugin extras
-  # see `postgis` and `grass` above
-  # grass7 use grass-71 from rkrug/head-only
-  depends_on "grass-71" if build.with? "grass7"
+  # see `postgis` above
+  # grass7 use grass-71 from rkrug/head-only (copied to this repo)
+  # no grass-64 option because grass7 I don't use grass-64
+  depends_on "jctull/osgeo4mac/grass-71" if build.with? "grass7"
   depends_on "orfeo-42" if build.with? "orfeo"
   depends_on "homebrew/science/r" => :optional
   depends_on "saga-gis" => :optional
@@ -143,6 +136,7 @@ class Qgis214 < Formula
       -DQGIS_MACAPP_INSTALL_DEV=TRUE
       -DWITH_QSCIAPI=FALSE
       -DWITH_STAGED_PLUGINS=TRUE
+      -DWITH_GRASS=FALSE
     ]
 
     args << "-DPYTHON_EXECUTABLE='#{python_exec}'"
@@ -167,15 +161,7 @@ class Qgis214 < Formula
     end
 
     args << "-DPOSTGRES_CONFIG=#{Formula["postgresql"].opt_bin}/pg_config" if build.with? "postgresql"
-
-    args << "-DWITH_GRASS=#{build.with?("grass") ? "TRUE" : "FALSE"}"
-    if build.with? "grass"
-      # this is to build the GRASS Plugin, not for Processing plugin support
-      grass = Formula["grass-64"]
-      args << "-DGRASS_PREFIX='#{grass.opt_prefix}/grass-#{grass.version.to_s}'"
-      # So that `libintl.h` can be found
-      ENV.append "CXXFLAGS", "-I'#{Formula["gettext"].opt_include}'"
-    end
+    args << "-DGRASS_PREFIX7=#{"grass-71"}/grass-7.1.svn" if build.with? "grass7"
 
     args << "-DWITH_GLOBE=#{build.with?("globe") ? "TRUE" : "FALSE"}"
     if build.with? "globe"
@@ -267,34 +253,6 @@ class Qgis214 < Formula
       :PYTHONPATH => "#{pypth}",
       :GDAL_DRIVER_PATH => "#{HOMEBREW_PREFIX}/lib/gdalplugins"
     }
-
-    proc_algs = "Contents/Resources/python/plugins/processing/algs"
-    unless opts.include? "without-grass"
-      grass = Formula["grass-64"]
-      envars[:GRASS_PREFIX] = "#{grass.opt_prefix}/grass-#{grass.version.to_s}"
-      begin
-        inreplace app/"#{proc_algs}/grass/GrassUtils.py",
-                  "/Applications/GRASS-6.4.app/Contents/MacOS",
-                  HOMEBREW_PREFIX/"opt/grass-64/grass-base" unless bottle_poured
-      rescue Utils::InreplaceError
-        puts "GRASS 6 GrassUtils already updated"
-      end
-
-    end
-
-# GRASS workaround, create symlink 'grass70.sh' pointing at 'grass71'
-# in /usr/local/bin. This hack is not ideal, so please provide a more
-# elegant solution if you have one.
-#
-#    if opts.include? "with-grass7"
-#      begin
-#        inreplace app/"#{proc_algs}/grass7/Grass7Utils.py",
-#                  "/Applications/GRASS-7.0.app/Contents/MacOS",
-#                  HOMEBREW_PREFIX/"opt/grass-71/grass-7.1.svn"
-#      rescue Utils::InreplaceError
-#        puts "GRASS 7 GrassUtils already updated"
-#      end
-#    end
 
     unless opts.include? "without-globe"
       osg = Formula["open-scene-graph"]
@@ -411,18 +369,6 @@ class Qgis214 < Formula
 
       EOS
     end
-
-    s += <<-EOS.undent
-      If you have built GRASS 6.4.x or 7.0.x support for the Processing plugin set
-      the following in QGIS:
-        Processing->Options: Providers->GRASS commands->GRASS folder to:
-           #{HOMEBREW_PREFIX}/opt/grass-64/grass-base
-        Processing->Options: Providers->GRASS GIS 7 commands->GRASS 7 folder to:
-           #{HOMEBREW_PREFIX}/opt/grass-70/grass-base
-
-    EOS
-
-    s
   end
 
   private
