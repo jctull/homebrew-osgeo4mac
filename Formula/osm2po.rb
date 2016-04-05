@@ -7,8 +7,8 @@ end
 
 class Osm2po < Formula
   homepage "http://osm2po.de"
-  url "http://osm2po.de/dld/osm2po-5.1.0.zip", :using => CurlRefererDownloadStrategy
-  sha1 "30e4ec3d0947b3b1182b46869898e306feafa702"
+  url "http://osm2po.de/releases/osm2po-5.1.0.zip", :using => CurlRefererDownloadStrategy
+  sha1 "3ec3055c3387a40a18ed1dfe3ddd1892097d1a37698ce58a069311d8cc65b6ec"
 
   def install
     doc.install Dir["osm2po-doc/*"]
