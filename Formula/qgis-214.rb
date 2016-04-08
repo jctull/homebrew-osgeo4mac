@@ -12,8 +12,8 @@ end
 class Qgis214 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
-  url "https://github.com/qgis/QGIS/archive/ltr-2_14.tar.gz"
-  sha256 "c2127335d85741234cbfc846807eba9eaff37ca134ef1a820c1e8fd2b132372b"
+  url "https://github.com/qgis/QGIS/archive/ltr-2_14_1.tar.gz"
+  sha256 "ba665e8ee154446b8a5a62858ec814ddae438b5ca2988303184f720237a46aeb"
 
   bottle do
     root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
@@ -31,7 +31,8 @@ class Qgis214 < Formula
   option "with-debug", "Enable debug build, which outputs info to system.log or console"
   option "without-server", "Build without QGIS Server (qgis_mapserv.fcgi)"
   option "without-postgresql", "Build without current PostgreSQL client"
-  option "with-globe", "Build with Globe plugin, based upon osgEarth"
+  # Globe not working
+  #  option "with-globe", "Build with Globe plugin, based upon osgEarth"
   option "without-postgis", "Build without extra PostGIS geospatial database extender"
   option "with-grass7", "Build with GRASS 7 Processing support"
   option "with-oracle", "Build extra Oracle geospatial database and raster support"
@@ -39,6 +40,7 @@ class Qgis214 < Formula
   option "with-r", "Build extra R for Processing plugin"
   option "with-saga-gis", "Build extra Saga GIS for Processing plugin"
   option "with-qt-mysql", "Build extra Qt MySQL plugin for eVis plugin"
+  option "with-qspatialite", "Build QSpatialite Qt database driver"
   option "with-api-docs", "Build the API documentation with Doxygen and Graphviz"
 
   depends_on UnlinkedQGIS214
@@ -186,6 +188,8 @@ class Qgis214 < Formula
       args << "-DOCI_INCLUDE_DIR=#{oracle_opt}/sdk/include"
       args << "-DOCI_LIBRARY=#{oracle_opt}/lib/libclntsh.dylib"
     end
+
+    args << "-DWITH_QSPATIALITE=#{build.with?("qspatialite") ? "TRUE" : "FALSE"}"
 
     args << "-DWITH_APIDOC=#{build.with?("api-docs") ? "TRUE" : "FALSE"}"
 
