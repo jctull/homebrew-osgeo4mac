@@ -1,8 +1,8 @@
 class Mapnik < Formula
   desc "Toolkit for developing mapping applications"
   homepage "http://www.mapnik.org/"
-  url "https://github.com/mapnik/mapnik/archive/v3.0.9.tar.gz"
-  sha256 "f0242606096e2c4ca2cd0caac1ff0fd5f8054a38b5f288ba38b0e397b5b311b2"
+  url "https://mapnik.s3.amazonaws.com/dist/v3.0.10/mapnik-v3.0.10.tar.bz2"
+  sha256 "3640bcec197a34ee078153e667c34433da5b71e02f1fa7c148012d97bd36aa39"
 
   head "https://github.com/mapnik/mapnik.git"
 
