@@ -102,6 +102,7 @@ class Gdal < Formula
       "--with-local=#{prefix}",
       "--with-threads",
       "--with-libtool",
+      "--with-python",
 
       # GDAL native backends.
       "--with-pcraster=internal",
@@ -206,9 +207,6 @@ class Gdal < Formula
 
     args << "--with-libkml=#{libexec}" if build.with? "libkml"
 
-    # Python is installed manually to ensure everything is properly sandboxed.
-    args << "--without-python"
-
     # Scripting APIs that have not been re-worked to respect Homebrew prefixes.
     #
     # Currently disabled as they install willy-nilly into locations outside of
@@ -219,7 +217,6 @@ class Gdal < Formula
     # Homebrew prefix.
     args << "--without-perl"
     args << "--without-php"
-    args << "--without-ruby"
 
     args << (build.with?("opencl") ? "--with-opencl" : "--without-opencl")
     args << (build.with?("armadillo") ? "--with-armadillo=#{Formula["armadillo"].opt_prefix}" : "--with-armadillo=no")

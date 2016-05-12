@@ -28,7 +28,7 @@ from collections import OrderedDict
 import argparse
 
 GRASS_VERSION = '6.4.4'
-GRASS7_VERSION = '7.0.1'
+GRASS7_VERSION = '7.0.4'
 OSG_VERSION = '3.4.0'
 HOMEBREW_PREFIX = '/usr/local'  # default for Homebrew
 
@@ -57,6 +57,7 @@ def cmake_opts(qi, hb, ver):
         ('CMAKE_INSTALL_PREFIX', qi),
         ('CMAKE_PREFIX_PATH', '"{hb}/opt/libxml2;{hb}/opt/expat;'
                               '{hb}/opt/gettext;{hb}/opt/sqlite;'
+                              '{hb}/opt/gdal-20;'
                               '{hb}"'),
         ('CMAKE_FRAMEWORK_PATH', '"{hb}/opt/qwt/lib;{hb}/opt/qwtpolar/lib"'),
         ('CMAKE_BUILD_TYPE', 'RelWithDebInfo'),
@@ -65,13 +66,18 @@ def cmake_opts(qi, hb, ver):
         ('CMAKE_EXE_LINKER_FLAGS', '"' + ld_flags + '"'),
         ('CMAKE_MODULE_LINKER_FLAGS', '"' + ld_flags + '"'),
         ('CMAKE_SHARED_LINKER_FLAGS', '"' + ld_flags + '"'),
-        ('CXX_EXTRA_FLAGS', '"-Wno-unused-private-field -Wno-deprecated-register"'),
+        ('CXX_EXTRA_FLAGS', '"-Wno-inconsistent-missing-override '
+                            '-Wno-unused-private-field '
+                            '-Wno-deprecated-register"'),
         ('BISON_EXECUTABLE', '{hb}/opt/bison/bin/bison'),
         ('QT_QMAKE_EXECUTABLE', '{hb}/bin/qmake'),
+        ('SUPPRESS_QT_WARNINGS', 'TRUE'),
         ('GITCOMMAND', '{hb}/bin/git'),
         ('ENABLE_TESTS', 'TRUE'),
+        ('ENABLE_MODELTEST', 'TRUE'),
         ('WITH_ASTYLE', 'TRUE'),
         ('WITH_PYSPATIALITE', 'FALSE'),
+        ('WITH_QWTPOLAR', 'TRUE'),
         ('WITH_INTERNAL_QWTPOLAR', 'FALSE'),
         (w_server, 'TRUE'),
         ('WITH_STAGED_PLUGINS', 'FALSE'),
@@ -79,22 +85,37 @@ def cmake_opts(qi, hb, ver):
         ('WITH_APIDOC', 'FALSE'),
         ('WITH_QSCIAPI', 'FALSE'),
         ('QSCI_SIP_DIR', '{hb}/opt/qscintilla2/share/sip'),
+        ('GDAL_CONFIG', '{hb}/opt/gdal-20/bin/gdal-config'),
         ('POSTGRES_CONFIG', '{hb}/bin/pg_config'),
-        ('WITH_GRASS', 'TRUE'),
-        ('GRASS_PREFIX', '{hb}/opt/grass-64/grass-' + GRASS_VERSION),
+        ('WITH_QSPATIALITE', 'TRUE'),
+        ('WITH_GRASS', 'FALSE'),
         ('WITH_GRASS7', 'TRUE'),
         ('GRASS_PREFIX7', '{hb}/opt/grass-70/grass-' + GRASS7_VERSION),
         ('WITH_GLOBE', 'FALSE'),
-        ('OSG_DIR', '{hb}'),
-        ('OSGEARTH_DIR', '{hb}'),
-        ('OSG_PLUGINS_PATH', '{hb}/lib/osgPlugins-' + OSG_VERSION),
         ('WITH_ORACLE', 'FALSE'),
+        ('FCGI_INCLUDE_DIR', '{hb}/opt/fcgi/include'),
+        ('GEOS_INCLUDE_DIR', '{hb}/opt/geos/include'),
+        ('GSL_INCLUDE_DIR', '{hb}/opt/gsl/include'),
+        ('PROJ_INCLUDE_DIR', '{hb}/opt/proj/include'),
+        ('QCA_INCLUDE_DIR', '{hb}/opt/qca/lib/qca.framework/Headers'),
+        ('QSCINTILLA_INCLUDE_DIR', '{hb}/opt/qscintilla2/include'),
+        ('QWT_INCLUDE_DIR', '{hb}/opt/qwt/lib/qwt.framework/Headers'),
+        ('SPATIALINDEX_INCLUDE_DIR', '{hb}/opt/spatialindex/include/spatialindex'),
+        ('SPATIALITE_INCLUDE_DIR', '{hb}/opt/libspatialite/include'),
+        ('SQLITE3_INCLUDE_DIR', '{hb}/opt/sqlite/include'),
         ('QGIS_MACAPP_BUNDLE', '0')
     ])
 
     # ('CMAKE_FRAMEWORK_PATH', '""')
 
     # Supplemental
+
+    # ('OSG_DIR', '{hb}'),
+    # ('OSGEARTH_DIR', '{hb}'),
+    # ('OSG_PLUGINS_PATH', '{hb}/lib/osgPlugins-' + OSG_VERSION),
+
+    # ('GRASS_PREFIX', '{hb}/opt/grass-64/grass-' + GRASS_VERSION),
+
     # ('OCI_INCLUDE_DIR', '{hb}/opt/oracle-client-sdk/sdk/include'),
     # ('OCI_LIBRARY', '{hb}/lib/libclntsh.dylib'),
 
