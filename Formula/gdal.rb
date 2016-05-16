@@ -13,7 +13,6 @@ class Gdal < Formula
   option "with-mdb", "Build with Access MDB driver (requires Java 1.6+ JDK/JRE, from Apple or Oracle)."
   option "with-libkml", "Build with Google's libkml driver (requires libkml --HEAD or >= 1.3)"
   option "with-swig-java", "Build the swig java bindings"
-  option "with-python", "Build with python2 support"
   option "with-python3", "Build with python3 support"
 
   deprecated_option "enable-opencl" => "with-opencl"
@@ -73,6 +72,11 @@ class Gdal < Formula
     depends_on "ant" => :build
     depends_on "swig" => :build
   end
+  
+  option "without-python", "Build without python2 support"
+  depends_on :python => :optional if MacOS.version <= :snow_leopard
+  depends_on :python3 => :optional
+  depends_on :fortran => :build if build.with?("python") || build.with?("python3")
 
   # Extra linking libraries in configure test of armadillo may throw warning
   # see: https://trac.osgeo.org/gdal/ticket/5455
@@ -199,7 +203,7 @@ class Gdal < Formula
 
     args << "--with-libkml=#{libexec}" if build.with? "libkml"
 
-    # Python is installed manually to ensure everything is properly sandboxed. Uses 'pip install gdal'.
+    # Python is installed manually to ensure everything is properly sandboxed.
     args << "--without-python"
 
     # Scripting APIs that have not been re-worked to respect Homebrew prefixes.
