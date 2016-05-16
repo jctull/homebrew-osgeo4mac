@@ -1,11 +1,15 @@
-require 'formula'
-
-class Gdal < Formula
+class Gdal20 < Formula
   desc "GDAL: Geospatial Data Abstraction Library"
   homepage "http://www.gdal.org/"
   url "http://download.osgeo.org/gdal/2.1.0/gdal-2.1.0.tar.gz"
   sha256 "eb499b18e5c5262a803bb7530ae56e95c3293be7b26c74bcadf67489203bf2cd"
 
+  head do
+    url "https://svn.osgeo.org/gdal/trunk/gdal"
+    depends_on "doxygen" => :build
+  end
+
+  keg_only "Older version of gdal is in main tap and installs similar components"
   option "with-complete", "Use additional Homebrew libraries to provide more drivers."
   option "with-opencl", "Build with OpenCL acceleration."
   option "with-armadillo", "Build with Armadillo accelerated TPS transforms."
@@ -53,6 +57,7 @@ class Gdal < Formula
     depends_on "epsilon"
     depends_on "libdap"
     depends_on "libxml2"
+    depends_on "homebrew/versions/openjpeg21"
 
     # Vector libraries
     depends_on "unixodbc" # OS X version is not complete enough
@@ -72,7 +77,7 @@ class Gdal < Formula
     depends_on "ant" => :build
     depends_on "swig" => :build
   end
-  
+
   option "without-python", "Build without python2 support"
   depends_on :python => :optional if MacOS.version <= :snow_leopard
   depends_on :python3 => :optional
@@ -146,6 +151,7 @@ class Gdal < Formula
       dods-root
       epsilon
       webp
+      openjpeg
       podofo
       pdfium
     ]
@@ -155,7 +161,7 @@ class Gdal < Formula
       supported_backends.delete "pdfium"
       args << "--with-pdfium=yes"
       args.concat supported_backends.map { |b| "--with-" + b + "=" + HOMEBREW_PREFIX }
-    else build.without? "unsupported"
+    elsif build.without? "unsupported"
       args.concat supported_backends.map { |b| "--without-" + b }
     end
 
@@ -171,7 +177,6 @@ class Gdal < Formula
       ogdi
       fme
       hdf4
-      openjpeg
       fgdb
       ecw
       kakadu
@@ -266,6 +271,15 @@ class Gdal < Formula
     system "make"
     system "make", "install"
 
+    inreplace "swig/python/setup.cfg", /#(.*_dirs)/, "\\1"
+    inreplace "swig/python/setup.cfg", "include_dirs = ../../port:../../gcore:../../alg:../../ogr/","include_dirs = ../../port:../../gcore:../../alg:../../ogr/:../../apps/"
+    Language::Python.each_python(build) do |python, python_version|
+      cd "swig/python" do
+        system python, *Language::Python.setup_install_args(prefix)
+        bin.install Dir["scripts/*"] if python == "python"
+      end
+    end
+
     if build.with? "swig-java"
       cd "swig/java" do
         inreplace "java.opt", "linux", "darwin"
@@ -279,17 +293,6 @@ class Gdal < Formula
       end
     end
 
-    inreplace "swig/python/setup.cfg", /#(.*_dirs)/, "\\1"
-    inreplace "swig/python/setup.cfg", "include_dirs = ../../port:../../gcore:../../alg:../../ogr/","include_dirs = ../../port:../../gcore:../../alg:../../ogr/:../../apps/"
-    Language::Python.each_python(build) do |python, python_version|
-      cd "swig/python" do
-        system python, *Language::Python.setup_install_args(prefix)
-        bin.install Dir["scripts/*"] if python == "python"
-      end
-    end
-#    system "pip", "install", "--upgrade", "--no-deps", "--force-reinstall", "gdal" if build.with? "python"
-#    system "pip3", "install", "--upgrade", "--no-deps", "--force-reinstall", "gdal" if build.with? "python3"
-
     system "make", "man" if build.head?
     system "make", "install-man"
     # Clean up any stray doxygen files.
@@ -299,10 +302,8 @@ class Gdal < Formula
   def caveats
     if build.with? "mdb"
       <<-EOS.undent
-
       To have a functional MDB driver, install supporting .jar files in:
         `/Library/Java/Extensions/`
-
       See: `http://www.gdal.org/ogr/drv_mdb.html`
       EOS
     end
