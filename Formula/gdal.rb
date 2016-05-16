@@ -1,4 +1,4 @@
-class Gdal20 < Formula
+class Gdal < Formula
   desc "GDAL: Geospatial Data Abstraction Library"
   homepage "http://www.gdal.org/"
   url "http://download.osgeo.org/gdal/2.1.0/gdal-2.1.0.tar.gz"

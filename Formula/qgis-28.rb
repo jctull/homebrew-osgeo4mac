@@ -33,7 +33,6 @@ class Qgis28 < Formula
   option "without-postgresql", "Build without current PostgreSQL client"
   option "with-globe", "Build with Globe plugin, based upon osgEarth"
   option "without-postgis", "Build without extra PostGIS geospatial database extender"
-  option "without-grass", "Build without GRASS 6 integration plugin and Processing plugin support"
   option "with-grass7", "Build with GRASS 7 for Processing plugin"
   option "with-oracle", "Build extra Oracle geospatial database and raster support"
   option "with-orfeo", "Build extra Orfeo Toolbox for Processing plugin"
@@ -70,21 +69,16 @@ class Qgis28 < Formula
 
   # core providers
   depends_on "jctull/osgeo4mac/gdal"
-  depends_on "postgis" => :recommended
+  depends_on "jctull/osgeo4mac/postgis" => :recommended
   depends_on "oracle-client-sdk" if build.with? "oracle"
   # TODO: add MSSQL third-party support formula?, :optional
 
   # core plugins (c++ and python)
-  if build.with? "grass"
-    depends_on "grass-64"
-    depends_on "gdal-grass64"
-    depends_on "gettext"
-  end
-
   if build.with? "globe"
     depends_on "open-scene-graph" => ["with-qt"]
     depends_on "homebrew/science/osgearth"
   end
+  
   depends_on "gpsbabel" => [:recommended, "with-libusb"]
   # TODO: remove "pyspatialite" when PyPi package supports spatialite 4.x
   #       or DB Manager supports libspatialite >= 4.2.0 (with mod_spatialite)
@@ -93,7 +87,7 @@ class Qgis28 < Formula
 
   # core processing plugin extras
   # see `postgis` and `grass` above
-  depends_on "grass-70" if build.with? "grass7"
+  depends_on "jctull/osgeo4mac/grass-71" if build.with? "grass7"
   depends_on "orfeo-42" if build.with? "orfeo"
   depends_on "homebrew/science/r" => :optional
   depends_on "saga-gis" => :optional
@@ -142,6 +136,7 @@ class Qgis28 < Formula
       -DQGIS_MACAPP_INSTALL_DEV=TRUE
       -DWITH_QSCIAPI=FALSE
       -DWITH_STAGED_PLUGINS=FALSE
+      -DWITH_GRASS=FALSE
     ]
 
     args << "-DPYTHON_EXECUTABLE='#{python_exec}'"
