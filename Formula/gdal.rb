@@ -6,11 +6,6 @@ class Gdal < Formula
   url "http://download.osgeo.org/gdal/2.1.0/gdal-2.1.0.tar.gz"
   sha256 "eb499b18e5c5262a803bb7530ae56e95c3293be7b26c74bcadf67489203bf2cd"
 
-  head do
-    url "https://svn.osgeo.org/gdal/trunk/gdal"
-    depends_on "doxygen" => :build
-  end
-
   option "with-complete", "Use additional Homebrew libraries to provide more drivers."
   option "with-opencl", "Build with OpenCL acceleration."
   option "with-armadillo", "Build with Armadillo accelerated TPS transforms."
@@ -18,6 +13,8 @@ class Gdal < Formula
   option "with-mdb", "Build with Access MDB driver (requires Java 1.6+ JDK/JRE, from Apple or Oracle)."
   option "with-libkml", "Build with Google's libkml driver (requires libkml --HEAD or >= 1.3)"
   option "with-swig-java", "Build the swig java bindings"
+  option "with-python", "Build with python2 support"
+  option "with-python3", "Build with python3 support"
 
   deprecated_option "enable-opencl" => "with-opencl"
   deprecated_option "enable-armadillo" => "with-armadillo"
@@ -70,16 +67,12 @@ class Gdal < Formula
   end
 
   depends_on :java => ["1.7+", :optional, :build]
+  depends_on "numpy" => :python||:python3
 
   if build.with? "swig-java"
     depends_on "ant" => :build
     depends_on "swig" => :build
   end
-
-  option "without-python", "Build without python2 support"
-  depends_on :python => :optional if MacOS.version <= :snow_leopard
-  depends_on :python3 => :optional
-  depends_on :fortran => :build if build.with?("python") || build.with?("python3")
 
   # Extra linking libraries in configure test of armadillo may throw warning
   # see: https://trac.osgeo.org/gdal/ticket/5455
@@ -102,7 +95,6 @@ class Gdal < Formula
       "--with-local=#{prefix}",
       "--with-threads",
       "--with-libtool",
-      "--with-python",
 
       # GDAL native backends.
       "--with-pcraster=internal",
@@ -159,8 +151,8 @@ class Gdal < Formula
       supported_backends.delete "pdfium"
       args << "--with-pdfium=yes"
       args.concat supported_backends.map { |b| "--with-" + b + "=" + HOMEBREW_PREFIX }
-    else
-      args.concat supported_backends.map { |b| "--without-" + b } if build.without? "unsupported"
+    else build.without? "unsupported"
+      args.concat supported_backends.map { |b| "--without-" + b }
     end
 
     # The following libraries are either proprietary, not available for public
@@ -207,6 +199,9 @@ class Gdal < Formula
 
     args << "--with-libkml=#{libexec}" if build.with? "libkml"
 
+    # Python is installed manually to ensure everything is properly sandboxed. Uses 'pip install gdal'.
+    args << "--without-python"
+
     # Scripting APIs that have not been re-worked to respect Homebrew prefixes.
     #
     # Currently disabled as they install willy-nilly into locations outside of
@@ -217,6 +212,7 @@ class Gdal < Formula
     # Homebrew prefix.
     args << "--without-perl"
     args << "--without-php"
+    args << "--without-ruby"
 
     args << (build.with?("opencl") ? "--with-opencl" : "--without-opencl")
     args << (build.with?("armadillo") ? "--with-armadillo=#{Formula["armadillo"].opt_prefix}" : "--with-armadillo=no")
@@ -225,6 +221,8 @@ class Gdal < Formula
   end
 
   def install
+    inreplace "swig/python/setup.cfg", /#(.*_dirs)/, "\\1"
+    inreplace "swig/python/setup.cfg", "include_dirs = ../../port:../../gcore:../../alg:../../ogr/","include_dirs = ../../port:../../gcore:../../alg:../../ogr/:../../apps/"
     if build.with? "libkml"
       resource("libkml").stage do
         # See main `libkml` formula for info on patches
@@ -278,6 +276,15 @@ class Gdal < Formula
         lib.install "gdal.jar"
       end
     end
+
+    Language::Python.each_python(build) do |python, python_version|
+      cd "swig/python" do
+        system python, *Language::Python.setup_install_args(prefix)
+        bin.install Dir["scripts/*"] if python == "python"
+      end
+    end
+#    system "pip", "install", "--upgrade", "--no-deps", "--force-reinstall", "gdal" if build.with? "python"
+#    system "pip3", "install", "--upgrade", "--no-deps", "--force-reinstall", "gdal" if build.with? "python3"
 
     system "make", "man" if build.head?
     system "make", "install-man"
