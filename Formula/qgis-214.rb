@@ -32,7 +32,6 @@ class Qgis214 < Formula
   option "with-qt-mysql", "Build extra Qt MySQL plugin for eVis plugin"
   option "with-qspatialite", "Build QSpatialite Qt database driver"
   option "with-api-docs", "Build the API documentation with Doxygen and Graphviz"
-  option "with-python3", "Build with python3 support"
 
   depends_on UnlinkedQGIS214
 
@@ -87,8 +86,6 @@ class Qgis214 < Formula
   depends_on "saga-gis" => :optional
   # TODO: LASTools straight build (2 reporting tools), or via `wine` (10 tools)
   # TODO: Fusion from USFS (via `wine`?)
-  depends_on :java => ["1.7+", :optional, :build]
-  depends_on "numpy" => :python||:python3
 
   resource "pyqgis-startup" do
     url "https://gist.githubusercontent.com/dakcarto/11385561/raw/7af66d0c8885a888831da6f12298a906484a1471/pyqgis_startup.py"
