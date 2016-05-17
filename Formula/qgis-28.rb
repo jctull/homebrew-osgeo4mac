@@ -12,18 +12,8 @@ end
 class Qgis28 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
-  url "https://github.com/qgis/QGIS/archive/final-2_8_3.tar.gz"
-  sha256 "8bb7d189a9503bc5a9ff1b2ca749853e9180a60a87952182aacc4fb2182cfd2b"
-
-  bottle do
-    root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
-    sha256 "6a2d89239b8da548a765beb839d428a81d1a1b34c3e64d8fe4c8699993aff7ef" => :mavericks
-    sha256 "15210d5e07cf9bfe1de8a042c5ddee82acf41b94adb28909a9c79dd6582e91c2" => :yosemite
-  end
-
-  def pour_bottle?
-    brewed_python?
-  end
+  url "http://qgis.org/downloads/qgis-2.8.9.tar.bz2"
+  sha256 "fea8e3a2026d9a26f61946f17745b1eef43ee1b7ea53ef1cc5b6a40481777fe7"
 
   head "https://github.com/qgis/QGIS.git", :branch => "release-2_8"
 
@@ -78,7 +68,7 @@ class Qgis28 < Formula
     depends_on "open-scene-graph" => ["with-qt"]
     depends_on "homebrew/science/osgearth"
   end
-  
+
   depends_on "gpsbabel" => [:recommended, "with-libusb"]
   # TODO: remove "pyspatialite" when PyPi package supports spatialite 4.x
   #       or DB Manager supports libspatialite >= 4.2.0 (with mod_spatialite)
@@ -235,7 +225,6 @@ class Qgis28 < Formula
     app = prefix/"QGIS.app"
     tab = Tab.for_formula(self)
     opts = tab.used_options
-    bottle_poured = tab.poured_from_bottle
 
     # define default isolation env vars
     pthsep = File::PATH_SEPARATOR
@@ -269,7 +258,7 @@ class Qgis28 < Formula
       begin
         inreplace app/"#{proc_algs}/grass/GrassUtils.py",
                   "/Applications/GRASS-6.4.app/Contents/MacOS",
-                  HOMEBREW_PREFIX/"opt/grass-64/grass-base" unless bottle_poured
+                  HOMEBREW_PREFIX/"opt/grass-64/grass-base"
       rescue Utils::InreplaceError
         puts "GRASS 6 GrassUtils already updated"
       end
@@ -338,8 +327,6 @@ class Qgis28 < Formula
 
   def caveats
     s = <<-EOS.undent
-      Bottles support only Homebrew's Python
-
       QGIS is built as an application bundle. Environment variables for the
       Homebrew prefix are embedded in QGIS.app:
         #{opt_prefix}/QGIS.app

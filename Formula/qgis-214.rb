@@ -12,18 +12,8 @@ end
 class Qgis214 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
-  url "https://github.com/qgis/QGIS/archive/ltr-2_14_1.tar.gz"
-  sha256 "ba665e8ee154446b8a5a62858ec814ddae438b5ca2988303184f720237a46aeb"
-
-  bottle do
-    root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
-    sha256 "6a2d89239b8da548a765beb839d428a81d1a1b34c3e64d8fe4c8699993aff7ef" => :mavericks
-    sha256 "15210d5e07cf9bfe1de8a042c5ddee82acf41b94adb28909a9c79dd6582e91c2" => :yosemite
-  end
-
-  def pour_bottle?
-    brewed_python?
-  end
+  url "http://qgis.org/downloads/qgis-2.14.2.tar.bz2"
+  sha256 "6e9e120a6c020ae620a6f917cd157364b76a307562606b35711cddaa613a17e0"
 
   head "https://github.com/qgis/QGIS.git", :branch => "master"
 
@@ -42,6 +32,7 @@ class Qgis214 < Formula
   option "with-qt-mysql", "Build extra Qt MySQL plugin for eVis plugin"
   option "with-qspatialite", "Build QSpatialite Qt database driver"
   option "with-api-docs", "Build the API documentation with Doxygen and Graphviz"
+  option "with-python3", "Build with python3 support"
 
   depends_on UnlinkedQGIS214
 
@@ -96,6 +87,8 @@ class Qgis214 < Formula
   depends_on "saga-gis" => :optional
   # TODO: LASTools straight build (2 reporting tools), or via `wine` (10 tools)
   # TODO: Fusion from USFS (via `wine`?)
+  depends_on :java => ["1.7+", :optional, :build]
+  depends_on "numpy" => :python||:python3
 
   resource "pyqgis-startup" do
     url "https://gist.githubusercontent.com/dakcarto/11385561/raw/7af66d0c8885a888831da6f12298a906484a1471/pyqgis_startup.py"
@@ -154,7 +147,7 @@ class Qgis214 < Formula
     end
 
     # find git revision for HEAD build
-    if build.head? && File.exists?("#{cached_download}/.git/index")
+    if build.head? && File.exist?("#{cached_download}/.git/index")
       args << "-DGITCOMMAND=#{Formula["git"].opt_bin}/git"
       args << "-DGIT_MARKER=#{cached_download}/.git/index"
     else
@@ -203,8 +196,8 @@ class Qgis214 < Formula
 
     mkdir "build" do
       system "cmake", "..", *args
-      #system "bbedit", "CMakeCache.txt"
-      #raise
+      # system "bbedit", "CMakeCache.txt"
+      # raise
       system "make", "install"
     end
 
@@ -244,7 +237,6 @@ class Qgis214 < Formula
     app = prefix/"QGIS.app"
     tab = Tab.for_formula(self)
     opts = tab.used_options
-    bottle_poured = tab.poured_from_bottle
 
     # define default isolation env vars
     pthsep = File::PATH_SEPARATOR
@@ -258,7 +250,7 @@ class Qgis214 < Formula
       end
       pyenv = ENV["PYTHONPATH"]
       if pyenv
-        pypth = (pyenv.include?(pypth)) ? pyenv : pypth + pthsep + pyenv
+        pypth = pyenv.include?(pypth) ? pyenv : pypth + pthsep + pyenv
       end
     end
 
@@ -268,7 +260,7 @@ class Qgis214 < Formula
     envars = {
       :PATH => "#{pths}",
       :PYTHONPATH => "#{pypth}",
-      :GDAL_DRIVER_PATH => "#{HOMEBREW_PREFIX}/lib/gdalplugins"
+      :GDAL_DRIVER_PATH => "#{HOMEBREW_PREFIX}/lib/gdalplugins",
     }
 
     unless opts.include? "without-globe"
@@ -286,12 +278,12 @@ class Qgis214 < Formula
       ]
       envars[:DYLD_VERSIONED_LIBRARY_PATH] = versioned.join(pthsep)
     end
-    if opts.include? "enable-isolation" or File.exist?("/Library/Frameworks/GDAL.framework")
+    if opts.include? "enable-isolation" || File.exist?("/Library/Frameworks/GDAL.framework")
       envars[:PYQGIS_STARTUP] = opt_libexec/"pyqgis_startup.py"
     end
 
-    #envars.each { |key, value| puts "#{key.to_s}=#{value}" }
-    #exit
+    # envars.each { |key, value| puts "#{key.to_s}=#{value}" }
+    # exit
 
     # add env vars to QGIS.app's Info.plist, in LSEnvironment section
     plst = app/"Contents/Info.plist"
@@ -310,7 +302,7 @@ class Qgis214 < Formula
 
     # add env vars to launch script for QGIS app's binary
     qgis_bin = bin/"qgis"
-    rm_f qgis_bin if File.exists?(qgis_bin) # install generates empty file
+    rm_f qgis_bin if File.exist?(qgis_bin) # install generates empty file
     bin_cmds = %W[#!/bin/sh\n]
     # setup shell-prepended env vars (may result in duplication of paths)
     envars[:PATH] = "#{HOMEBREW_PREFIX}/bin" + pthsep + "$PATH"
@@ -323,8 +315,6 @@ class Qgis214 < Formula
 
   def caveats
     s = <<-EOS.undent
-      Bottles support only Homebrew's Python
-
       QGIS is built as an application bundle. Environment variables for the
       Homebrew prefix are embedded in QGIS.app:
         #{opt_prefix}/QGIS.app
@@ -399,7 +389,7 @@ class Qgis214 < Formula
   end
 
   def brewed_python?
-    Formula["python"].linked_keg.exist? and brewed_python_framework?
+    Formula["python"].linked_keg.exist? && brewed_python_framework?
   end
 
   def python_exec
