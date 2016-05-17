@@ -17,7 +17,6 @@ class Gdal < Formula
   option "with-mdb", "Build with Access MDB driver (requires Java 1.6+ JDK/JRE, from Apple or Oracle)."
   option "with-libkml", "Build with Google's libkml driver (requires libkml --HEAD or >= 1.3)"
   option "with-swig-java", "Build the swig java bindings"
-  option "with-python3", "Build with python3 support"
 
   deprecated_option "enable-opencl" => "with-opencl"
   deprecated_option "enable-armadillo" => "with-armadillo"
@@ -136,7 +135,7 @@ class Gdal < Formula
       # Should be installed separately after GRASS installation using the
       # official GDAL GRASS plugin.
       "--without-grass",
-      "--without-libgrass"
+      "--without-libgrass",
     ]
 
     # Optional Homebrew packages supporting additional formats.
@@ -272,7 +271,7 @@ class Gdal < Formula
     system "make", "install"
 
     inreplace "swig/python/setup.cfg", /#(.*_dirs)/, "\\1"
-    inreplace "swig/python/setup.cfg", "include_dirs = ../../port:../../gcore:../../alg:../../ogr/","include_dirs = ../../port:../../gcore:../../alg:../../ogr/:../../apps/"
+    inreplace "swig/python/setup.cfg", /(include_dirs.+$)/, "\\1:../../apps/"
     Language::Python.each_python(build) do |python, python_version|
       cd "swig/python" do
         system python, *Language::Python.setup_install_args(prefix)
