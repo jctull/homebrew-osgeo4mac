@@ -12,8 +12,8 @@ end
 class Qgis214 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
-  url "http://qgis.org/downloads/qgis-2.14.2.tar.bz2"
-  sha256 "6e9e120a6c020ae620a6f917cd157364b76a307562606b35711cddaa613a17e0"
+  url "http://qgis.org/downloads/qgis-2.14.3.tar.bz2"
+  sha256 "544deafe6a486b57fba4c3dcb34043d620f960544dc72eca4a517f6fabd86a37"
 
   head "https://github.com/qgis/QGIS.git", :branch => "master"
 
@@ -32,6 +32,7 @@ class Qgis214 < Formula
   option "with-qt-mysql", "Build extra Qt MySQL plugin for eVis plugin"
   option "with-qspatialite", "Build QSpatialite Qt database driver"
   option "with-api-docs", "Build the API documentation with Doxygen and Graphviz"
+  option "with-ninja", "Build with Ninja"
 
   depends_on UnlinkedQGIS214
 
@@ -42,7 +43,7 @@ class Qgis214 < Formula
     depends_on "graphviz" => [:build, "with-freetype"]
     depends_on "doxygen" => [:build, "with-dot"] # with graphviz support
   end
-  depends_on (build.include? "enable-isolation" || MacOS.version < :lion ) ? "python" : :python
+  depends_on (build.include? "enable-isolation" || MacOS.version < :lion) ? "python" : :python
   depends_on "qt"
   depends_on "pyqt"
   depends_on SipBinary
@@ -59,6 +60,7 @@ class Qgis214 < Formula
   depends_on "fcgi" if build.with? "server"
   # use newer postgresql client than Apple's, also needed by `psycopg2`
   depends_on "postgresql" => :recommended
+  depends_on "ninja" => :optional
 
   # core providers
   depends_on "jctull/osgeo4mac/gdal"
@@ -113,7 +115,7 @@ class Qgis214 < Formula
     qsci_opt = Formula["qscintilla2"].opt_prefix
     args = std_cmake_args
     if build.with? "debug"
-      args << "-DCMAKE_BUILD_TYPE=RelWithDebInfo"  # override
+      args << "-DCMAKE_BUILD_TYPE=RelWithDebInfo" # override
     else
       args << "-DCMAKE_BUILD_TYPE=MinSizeRel"
     end
@@ -183,6 +185,11 @@ class Qgis214 < Formula
 
     args << "-DWITH_APIDOC=#{build.with?("api-docs") ? "TRUE" : "FALSE"}"
 
+    if build.with? "ninja"
+      args << "-GNinja"
+    end
+
+
     # Avoid ld: framework not found QtSql
     # (https://github.com/Homebrew/homebrew-science/issues/23)
     ENV.append "CXXFLAGS", "-F#{Formula["qt"].opt_lib}"
@@ -195,7 +202,12 @@ class Qgis214 < Formula
       system "cmake", "..", *args
       # system "bbedit", "CMakeCache.txt"
       # raise
-      system "make", "install"
+      if build.with? "ninja"
+        system "ninja"
+        system "ninja", "install"
+      else
+        system "make", "install"
+      end
     end
 
     # Update .app's bundle identifier, so Kyngchaos.com installer doesn't get confused
