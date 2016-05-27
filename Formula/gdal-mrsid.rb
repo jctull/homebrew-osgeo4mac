@@ -1,9 +1,9 @@
 class GdalMrsid < Formula
   homepage "http://www.gdal.org/frmt_mrsid.html"
-  url "http://download.osgeo.org/gdal/1.11.0/gdal-1.11.0.tar.gz"
-  sha1 "25efd2bffdea2e841377ca8c1fd49d89d02ac87e"
+  url "http://download.osgeo.org/gdal/2.1.0/gdal-2.1.0.tar.gz"
+  sha256 "eb499b18e5c5262a803bb7530ae56e95c3293be7b26c74bcadf67489203bf2cd"
 
-  depends_on "mrsid-sdk"
+  depends_on "jctull/osgeo4mac/mrsid-sdk"
   depends_on "jctull/osgeo4mac/gdal"
 
   def install

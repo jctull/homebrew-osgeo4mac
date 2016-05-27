@@ -2,10 +2,9 @@ require File.expand_path("../../Strategies/cache-download", Pathname.new(__FILE_
 
 class MrsidSdk < Formula
   homepage "https://www.lizardtech.com/developer/"
-  url "file://#{HOMEBREW_CACHE}/MrSID_DSDK-9.0.0.3864-darwin12.universal.gccA42.tar.gz",
-      :using => CacheDownloadStrategy
-  sha1 "8a693cc71dbb8638f34e35efb8086f29b08fa764"
-  version "9.0.0.3864"
+  url "https://s3.amazonaws.com/bin.us.lizardtech.com/download/developer/MrSID_DSDK-9.5.1.4427-darwin15.universal.clang70.tar.gz"
+  sha256 "ddb8e5acc145a3b7f30096a2f5332c3acbaf7be43e15c70caddbad567704d1d8"
+  version "9.5.1.4427"
 
   option "with-bindings", "Build with Lidar Python and Ruby bindings"
   option "with-docs", "Intall documentation and examples for SDKs"
