@@ -271,7 +271,7 @@ class Gdal < Formula
     system "make", "install"
 
     inreplace "swig/python/setup.cfg", /#(.*_dirs)/, "\\1"
-    inreplace "swig/python/setup.cfg", /(include_dirs.+$)/, "\\1:../../apps/"
+    inreplace "swig/python/setup.cfg", "include_dirs = ../../port:../../gcore:../../alg:../../ogr/","include_dirs = ../../port:../../gcore:../../alg:../../ogr:../../apps/"
     Language::Python.each_python(build) do |python, python_version|
       cd "swig/python" do
         system python, *Language::Python.setup_install_args(prefix)
