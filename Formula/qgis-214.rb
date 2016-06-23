@@ -145,10 +145,12 @@ class Qgis214 < Formula
       args << "-DPYTHON_CUSTOM_FRAMEWORK='#{brewed_python_framework}'"
     end
 
-    # find git revision for HEAD build
+    # find git revision for HEAD build, suppress warnings
     if build.head? && File.exist?("#{cached_download}/.git/index")
       args << "-DGITCOMMAND=#{Formula["git"].opt_bin}/git"
       args << "-DGIT_MARKER=#{cached_download}/.git/index"
+      args << "-DSUPPRESS_SIP_WARNINGS=ON"
+      args <<"-DSUPPRESS_QT_WARNINGS=ON"
     else
       args << "-DGIT_MARKER=''" # if git clone borked, or release tarball, ends up defined as 'exported'
     end
