@@ -61,6 +61,9 @@ class Qgis216 < Formula
   # use newer postgresql client than Apple's, also needed by `psycopg2`
   depends_on "postgresql" => :recommended
   depends_on "ninja" => :optional
+  depends_on "geos" => :linked
+  depends_on "libspatialite" => :linked
+  depends_on "rkrug/head-only/grass-71" => :linked
 
   # core providers
   depends_on "jctull/osgeo4mac/gdal"
