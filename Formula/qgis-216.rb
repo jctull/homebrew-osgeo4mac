@@ -63,7 +63,6 @@ class Qgis216 < Formula
   depends_on "ninja" => :optional
   depends_on "geos" => :linked
   depends_on "libspatialite" => :linked
-  depends_on "rkrug/head-only/grass-71" => :linked
 
   # core providers
   depends_on "jctull/osgeo4mac/gdal"
