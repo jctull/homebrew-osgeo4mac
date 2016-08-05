@@ -3,19 +3,7 @@
 class Grass71 < Formula
   homepage "http://grass.osgeo.org/"
   head 'https://svn.osgeo.org/grass/grass/trunk'
-
-  stable do
-##    url "http://grass.osgeo.org/grass71/source/snapshot/grass-7.1.svn_src_snapshot_2015_05_30.tar.gz"
-##    sha1 "a162c38efb64d8e5754a7b66ba34558cd6bf96c4"
-
-    # Patches to keep files from being installed outside of the prefix.
-    # Remove lines from Makefile that try to install to /Library/Documentation.
-    patch :DATA
-  end
-
-  head do
-    patch :DATA
-  end
+  patch :DATA
 
   option "without-gui", "Build without WxPython interface. Command line tools still available."
 
@@ -128,31 +116,17 @@ class Grass71 < Formula
     `python -c "import os, sys, site; sp1 = list(sys.path); site.addsitedir('#{Formula[f].opt_lib}/python2.7/site-packages'); print(os.pathsep.join([x for x in sys.path if x not in sp1]))"`.strip
   end
 
-  def post_install
-    # ensure QGIS's Processing plugin recognizes install
-##    ln_sf "../bin/grass71", prefix/"grass-#{version.to_s}/grass71.sh"
-    # link so settings in external apps don't need updated on grass version bump
-    # in QGIS Processing options, GRASS folder = HOMEBREW_PREFIX/opt/grass-71/grass-base
-##    ln_sf "grass-#{version.to_s}", prefix/"grass-base"
-  end
-
   def caveats
-    if headless?
-      <<-EOS.undent
-        This build of GRASS has been compiled without the WxPython GUI.
+    <<-EOS.undent
+      This build of GRASS has been compiled without the WxPython GUI.
 
-        The command line tools remain fully functional.
-        EOS
-    end
+      The command line tools remain fully functional.
+      EOS
   end
 
   test do
     system "grass71 --version"
     system "grass71 --config"
-    # system "wget http://grass.osgeo.org/sampledata/north_carolina/nc_basic_spm_grass7.tar.gz"
-    # system "tar xzf ./nc_basic_spm_grass7.tar.gz"
-    # system "ls -l ./nc_basic_spm_grass7/"
-    # system "grass71 ./nc_basic_spm_grass7/PERMANENT --exec python -m grass.gunittest.main --location 'nc_basic_spm_grass7' --location-type nc"
   end
 end
 

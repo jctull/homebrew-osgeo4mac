@@ -12,8 +12,8 @@ end
 class Qgis216 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
-  url "http://qgis.org/downloads/qgis-2.16.0.tar.bz2"
-  sha256 "6f1c6fdd3e3dad0091138f09d66445b0aa095c4934a7717051eb74f800cbd598"
+  url "http://qgis.org/downloads/qgis-2.16.1.tar.bz2"
+  sha256 "9b0dd110cd5c584567e5b496e7befced068e07218f2aa8ca1d45827fb071da38"
 
   head "https://github.com/qgis/QGIS.git", :branch => "master"
 
@@ -96,16 +96,6 @@ class Qgis216 < Formula
     sha256 "3d0adca0c8684f3d907c626fc86d93d73165e184960d16ae883fca665ecc32e6"
     version "2.0.0"
   end
-
-  # patches that represent all backports to release-2_8 branch, since 2.8.3 tag, SHA1 (date)
-  # see: https://github.com/qgis/QGIS/commits/release-2_8
-  # stable do
-  #   patch do
-  #     # SHA1 (date) through SHA1 (date) minus windows-formatted patches
-  #     url ""
-  #     sha1 ""
-  #   end
-  # end
 
   def install
     # Set bundling level back to 0 (the default in all versions prior to 1.8.0)

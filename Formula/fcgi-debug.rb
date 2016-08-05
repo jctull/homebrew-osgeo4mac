@@ -4,7 +4,6 @@ class FcgiDebug < Formula
   url "https://github.com/lighttpd/fcgi-debug.git",
       :revision => "88c9f6a2b098f26d53d46e3d5db5dfafc758fdf1"
   version "0.0.0-88c9f6a"
-  sha1 "88c9f6a2b098f26d53d46e3d5db5dfafc758fdf1"
 
   head "https://github.com/lighttpd/fcgi-debug.git", :branch => "master"
 

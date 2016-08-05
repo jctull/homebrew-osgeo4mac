@@ -1,16 +1,14 @@
 class Iipsrv < Formula
   homepage "http://iipimage.sourceforge.net"
-  url "https://github.com/ruven/iipsrv.git", :revision => "cfffce90243148a3da4a13776f3764b280acd0ce"
-  version "0.9.9-dev"
+  url "http://downloads.sourceforge.net/project/iipimage/IIP%20Server/iipsrv-1.0/iipsrv-1.0.tar.bz2"
+  sha256 "60b9a75f86d17f21f2fd7650e2c437521b890e59e71ba223de743bb9f64e1a83"
+  version "1.0.0"
 
   option "with-lighttpd", "Install lighttpd and iipsrv configuration file"
   option "with-nginx", "Install nginx and iipsrv configuration file"
   option "with-vips", "Install VIPS for creating Tiled Pyramidal TIFFs"
   option "with-imagemagick", "Install ImageMagick for creating Tiled Pyramidal TIFFs"
 
-  depends_on :autoconf
-  depends_on :automake
-  depends_on :libtool
 
   depends_on "fcgi"
   depends_on "jpeg"
@@ -31,11 +29,10 @@ class Iipsrv < Formula
 
   resource "palaisuulouvre" do
     url "http://merovingio.c2rmf.cnrs.fr/iipimage/PalaisDuLouvre.tif"
-    sha1 "ef539b5f10745cbd1ff18d47bb8c87c3e9fb7c5a"
+    sha256 "e76b75c0b16609aa85e02c13b1ccd4c85ff4b452811e7878442422ce8b23ce6b"
   end
 
   def install
-    system "./autogen.sh"
     system "./configure",
       "--disable-dependency-tracking"
 

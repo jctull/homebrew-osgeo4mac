@@ -1,8 +1,8 @@
 class QcaQt5 < Formula
-  homepage "http://qt-project.org/"
+  homepage "http://delta.affinix.com/qca/"
   # 15 KB, stripped down archive of just what's needed to compile driver
   url "http://delta.affinix.com/download/qca/2.0/qca-2.1.0.tar.gz"
-  sha1 "2b582b3ccc7e6098cd14d6f52a829ae1539e9cc8"
+  sha256 "226dcd76138c3738cdc15863607a96b3758a4c3efd3c47295939bcea4e7a9284"
 
   depends_on "qt5"
   depends_on "cmake" => :build

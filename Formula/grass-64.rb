@@ -3,8 +3,8 @@ class Grass64 < Formula
   homepage "http://grass.osgeo.org/"
 
   stable do
-    url "http://grass.osgeo.org/grass64/source/grass-6.4.4.tar.gz"
-    sha1 "0e4dac9fb3320a26e4f640f641485fde0323dd46"
+    url "http://grass.osgeo.org/grass64/source/grass-6.4.5.tar.gz"
+    sha256 "f501da62807eb08efcb85820859fe5ade9bc392e20641b606273c956bb678f3e"
 
     # Patches to keep files from being installed outside of the prefix.
     # Remove lines from Makefile that try to install to /Library/Documentation.
@@ -12,13 +12,6 @@ class Grass64 < Formula
     patch :DATA
   end
   revision 1
-
-  bottle do
-    root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
-    revision 1
-    sha256 "13723d19221024073a0e781dddf3cbb9ab30e13a3b8d4d50c6eb61d0e60c347f" => :mavericks
-    sha256 "f951bfe72e348529ebd8ee56f202872258ccd803cee472079222d68acfd70e9b" => :yosemite
-  end
 
   keg_only "grass is in main tap and same-name bin utilities are installed"
 

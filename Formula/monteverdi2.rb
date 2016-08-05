@@ -1,45 +1,23 @@
 class Monteverdi2 < Formula
-  ORFEO = "orfeo-42"
+  ORFEO = "jctull/osgeo4mac/orfeo"
   OREFO_F = Formula[ORFEO]
   ORFEO_OPTS = Tab.for_formula(OREFO_F).used_options
-  ITK_VER = "4.6"
 
   homepage "http://orfeo-toolbox.org/otb/monteverdi.html"
-  url "https://downloads.sourceforge.net/project/orfeo-toolbox/Monteverdi2/Monteverdi2-0.8/Monteverdi2-0.8.0.tgz"
-  sha1 "c68c5ad95ca99621c79fcfa794333e8ae42a1a49"
-
-  bottle do
-    root_url "http://qgis.dakotacarto.com/osgeo4mac/bottles"
-    sha1 "ee50c769b7abc085fc3cc98094e666a561efc45d" => :mavericks
-  end
-
-  option "without-app", "Don't bundle into application"
+  url "https://git.orfeo-toolbox.org/monteverdi2.git/snapshot/8498ac0acf4a30bc033fe73ad0d4a469735a1a3c.tar.gz"
+  sha256 "e5e6eebaa99bb323c6384febd4fbdeaaa7897e1f2103cecd1799cf91b697922d"
+  version "3.4.0"
 
   depends_on "cmake" => :build
-  depends_on ORFEO
+  depends_on "jctull/osgeo4mac/orfeo"
   depends_on "qt"
-  depends_on "orfeo-ice"
   depends_on "glew"
+  depends_on "insighttoolkit"
 
   resource "qwt5" do
     # http://qwt.sourceforge.net/
     url "http://sourceforge.net/projects/qwt/files/qwt/5.2.3/qwt-5.2.3.tar.bz2"
-    sha1 "ff81595a1641a8b431f98d6091bb134bc94e0003"
-  end
-
-  resource "bundle" do
-    # substitute CMake bundling that doesn't bundle dependencies
-    url "https://gist.githubusercontent.com/dakcarto/517e4dcf0e7fc5f2711d/raw/7bc6d4d83c4df22de03690b2197c5b4b741fc60a/CMakeLists-osgeo4mac.txt"
-    sha1 "f283c7887319248cb14f85da86da49789776ee13"
-    version "0.8.0"
-  end
-
-  stable do
-    # patch to fix older on_MyAction_activated deprecated signal (now is _triggered)
-    patch do
-      url "https://gist.githubusercontent.com/dakcarto/c64599469d0019f2ff86/raw/f9a256e1ba51712fbeda1ea863a3584ca7319377/monteverdi2-activated.diff"
-      sha1 "0582bc3c81f41f50e94a91aefb2c297253c3d016"
-    end
+    sha256 "37feaf306753230b0d8538b4ff9b255c6fddaa3d6609ec5a5cc39a5a4d020ab7"
   end
 
   def install
@@ -63,45 +41,10 @@ class Monteverdi2 < Formula
       -DCMAKE_PREFIX_PATH=#{qwt5}
     ]
 
-    if build.with? "app"
-      args << "-DMonteverdi2_USE_CPACK=ON"
-      # substitute bundling script with a Homebrew-relative one,
-      # generating a barebones .app structure
-      macos_dir = buildpath/"Packaging/MacOS"
-      macos_dir.install resource("bundle")
-      File.rename macos_dir/"CMakeLists.txt", macos_dir/"CMakeLists-orig.txt"
-      File.rename macos_dir/"CMakeLists-osgeo4mac.txt", macos_dir/"CMakeLists.txt"
-      # fix up env vars in StartupCommand command so they point to Homebrew install
-      inreplace "#{macos_dir}/StartupCommand", "=$RESOURCES", "=#{HOMEBREW_PREFIX}"
-      # Qt plugins will not be bundled
-      inreplace "#{macos_dir}/qt.conf", "Plugins=../../lib/qt4/plugins", ""
-    end
-
-    if ORFEO_OPTS.include? "with-external-itk"
-      itk_f = Formula["insighttoolkit"]
-      args << "-DITK_DIR=" + itk_f.opt_lib/"cmake/ITK-#{ITK_VER}"
-      ENV.append "CXXFLAGS", "-I#{itk_f.opt_include}/ITK-#{ITK_VER}"
-    else
-      # Custom '-orfeo' suffix to avoid interfering with insighttoolkit formula
-      args << "-DITK_DIR=" + OREFO_F.opt_lib/"cmake/ITK-#{ITK_VER}-orfeo"
-      # FIXME: why is this needed for orfeo 4.2, but not 4.0?
-      ENV.append "CXXFLAGS", "-I#{OREFO_F.opt_include}/otb/Utilities/ITK"
-    end
-
     mkdir "build" do
       system "cmake", "..", *args
-      # system "/usr/local/bin/bbedit", "CMakeCache.txt"
-      # raise
       system "make"
       system "make", "install"
-      if build.with? "app"
-        system "make", "package"
-        # move pre-DMG'd .app from package temp dir over to prefix
-        Dir.glob("#{Dir.pwd}/_CPack_Packages/Darwin/Bundle/Monteverdi2-*/Monteverdi2-*.app") do |app|
-          rmtree "#{app}/Contents/Resources/lib" # not needed in bundle
-          mv app, prefix
-        end
-      end
     end
 
     # make command line utility launcher script
@@ -111,6 +54,19 @@ class Monteverdi2 < Formula
     }
     # FIXME: the About... and Preferences... dialogs do not show up. Why?
     bin.env_script_all_files(libexec/"bin", envars)
+
+    # Clean up library paths. There is probably a better way to do this...
+    system "chmod", "+w", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_ApplicationsWrapper.3.2.0.dylib"
+    system "install_name_tool", "-id", "@rpath/lib/otb/libMonteverdi_ApplicationsWrapper.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_ApplicationsWrapper.3.2.0.dylib"
+    system "install_name_tool", "-add_rpath", "@loader_path/../..", "/usr/local/Cellar/monteverdi2/3.4.0/libexec/bin/monteverdi"
+    system "install_name_tool", "-change", "@rpath/libMonteverdi_ApplicationsWrapper.3.2.dylib", "@rpath/lib/otb/libMonteverdi_ApplicationsWrapper.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/libexec/bin/monteverdi"
+    system "chmod", "+w", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_Gui.3.2.0.dylib"
+    system "install_name_tool", "-id", "@rpath/lib/otb/libMonteverdi_Gui.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_Gui.3.2.0.dylib"
+    system "install_name_tool", "-change", "@rpath/libMonteverdi_Gui.3.2.dylib", "@rpath/lib/otb/libMonteverdi_Gui.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/libexec/bin/monteverdi"
+    system "chmod", "+w", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_Core.3.2.0.dylib"
+    system "install_name_tool", "-id", "@rpath/lib/otb/libMonteverdi_Core.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_Core.3.2.0.dylib"
+    system "install_name_tool", "-change", "@rpath/libMonteverdi_Core.3.2.dylib", "@rpath/lib/otb/libMonteverdi_Core.3.2.0.dylib", "/usr/local/Cellar/monteverdi2/3.4.0/libexec/bin/monteverdi"
+    system "install_name_tool", "-add_rpath", "@loader_path/.", "/usr/local/Cellar/monteverdi2/3.4.0/lib/otb/libMonteverdi_ApplicationsWrapper.3.2.0.dylib"
   end
 
   def caveats; <<-EOS.undent
@@ -125,5 +81,4 @@ class Monteverdi2 < Formula
 
     EOS
   end
-
 end

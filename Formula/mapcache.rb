@@ -1,10 +1,10 @@
-class Mapcache12 < Formula
-  MAPSERVER = "mapserver-64"
+class Mapcache < Formula
+  MAPSERVER = "mapserver"
 
   homepage "http://mapserver.org/mapcache/"
-  url "https://github.com/mapserver/mapcache/archive/rel-1-2-1.tar.gz"
-  sha1 "20c8639de1cd2bf92a3177661198b1242a68b027"
-  version "1.2.1"
+  url "http://download.osgeo.org/mapserver/mapcache-1.4.1.tar.gz"
+  sha256 "8fa6e3fd50950462b23e10670688ac99bee57eee5c9ef9debc722098df20a0b6"
+  version "1.4.1"
 
   option "with-tiff-cache", "Build with TIFFs as a cache backend"
   option "without-apache-module", "Build without Apache2 module"

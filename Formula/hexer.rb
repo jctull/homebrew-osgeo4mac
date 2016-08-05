@@ -1,7 +1,7 @@
 class Hexer < Formula
   homepage "https://github.com/hobu/hexer"
   url "https://github.com/hobu/hexer/archive/1.3.0.tar.gz"
-  sha1 "29ba6b94690ec7a2faf425c232bba460b683efcf"
+  sha256 "826789332b26aa8bc2d766e3732362d11374ed2df45f9194459cfc3d32123d05"
 
   head "https://github.com/hobu/hexer.git", :branch => "master"
 

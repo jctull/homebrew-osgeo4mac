@@ -1,8 +1,7 @@
 class Marble < Formula
   homepage "http://marble.kde.org/"
-  url "http://download.kde.org/stable/4.13.1/src/marble-4.13.1.tar.xz"
-  sha1 "9d7cedc13098ddf1d759b44d570b9cf68d7f3ae7"
-  version "1.7.0"
+  url "git://anongit.kde.org/marble", :revision => "75a3cfd58aee6cc3edba0bcb191fdec2776b355e"
+  version "16.04.3"
 
   head "git://anongit.kde.org/marble"
 
@@ -12,7 +11,7 @@ class Marble < Formula
   option "with-tests", "Build and run unit tests"
 
   depends_on "cmake" => :build
-  depends_on "qt"
+  depends_on "qt5"
   depends_on "quazip" => :recommended
   depends_on "shapelib" => :recommended
   depends_on "gpsd" => :recommended
@@ -45,8 +44,6 @@ class Marble < Formula
 
     mkdir "build" do
       system "cmake", "..", *args
-      # system "bbedit", "CMakeCache.txt"
-      # raise
       system "make"
       system "make", "install"
     end

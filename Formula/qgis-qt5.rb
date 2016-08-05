@@ -105,16 +105,6 @@ class QgisQt5 < Formula
     version "2.0.0"
   end
 
-  # patches that represent all backports to release-2_8 branch, since 2.8.3 tag, SHA1 (date)
-  # see: https://github.com/qgis/QGIS/commits/release-2_8
-  # stable do
-  #   patch do
-  #     # SHA1 (date) through SHA1 (date) minus windows-formatted patches
-  #     url ""
-  #     sha1 ""
-  #   end
-  # end
-
   def install
     # Set bundling level back to 0 (the default in all versions prior to 1.8.0)
     # so that no time and energy is wasted copying the Qt frameworks into QGIS.

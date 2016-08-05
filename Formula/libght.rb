@@ -1,7 +1,7 @@
 class Libght < Formula
   homepage "https://github.com/pramsey/libght/"
   url "https://github.com/pramsey/libght/archive/v0.1.0.tar.gz"
-  sha1 "19104cdba21fabb8d5fad847af1a8e8bcde40b6a"
+  sha256 "3af40719bcb59785a2927ff95524ef9c961304c3b6522172036b66a1991164db"
 
   head "https://github.com/pramsey/libght.git", :branch => "master"
 
@@ -9,8 +9,8 @@ class Libght < Formula
 
   depends_on "cmake" => :build
   depends_on "proj"
-  depends_on "liblas"
-  depends_on "cunit" if build.with? "tests"
+  depends_on "jctull/osgeo4mac/liblas"
+  depends_on "cunit"
 
   def install
     ENV.libxml2
