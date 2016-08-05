@@ -6,7 +6,6 @@ class SagaGis < Formula
   head "svn://svn.code.sf.net/p/saga-gis/code-0/trunk/saga-gis"
 
   option "with-app", "Build SAGA.app Package"
-#  option "with-liblas", "Build with internal libLAS 1.2 support"
 
   depends_on :automake
   depends_on :autoconf
