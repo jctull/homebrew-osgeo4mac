@@ -13,7 +13,7 @@ class Qgis216 < Formula
   desc "Open Source Geographic Information System"
   homepage "http://www.qgis.org"
   url "http://qgis.org/downloads/qgis-2.16.1.tar.bz2"
-  sha256 "9b0dd110cd5c584567e5b496e7befced068e07218f2aa8ca1d45827fb071da38"
+  sha256 "4a526cd8ae76fc06bb2b6a158e86db5dc0c94545137a8233cd465ef867acdc8b"
 
   head "https://github.com/qgis/QGIS.git", :branch => "master"
 
