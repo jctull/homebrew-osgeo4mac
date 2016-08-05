@@ -7,9 +7,9 @@ class SagaGis < Formula
 
   option "with-app", "Build SAGA.app Package"
 
-  depends_on :automake
-  depends_on :autoconf
-  depends_on :libtool
+  depends_on "automake"
+  depends_on "autoconf"
+  depends_on "libtool"
   depends_on "jctull/osgeo4mac/gdal"
   depends_on "jasper"
   depends_on "proj"
