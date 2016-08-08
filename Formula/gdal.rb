@@ -56,7 +56,7 @@ class Gdal < Formula
     depends_on "epsilon"
     depends_on "libdap"
     depends_on "libxml2"
-    depends_on "homebrew/versions/openjpeg21"
+    depends_on "openjpeg"
 
     # Vector libraries
     depends_on "unixodbc" # OS X version is not complete enough
