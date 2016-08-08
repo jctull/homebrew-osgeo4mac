@@ -306,6 +306,10 @@ class Gdal < Formula
       See: `http://www.gdal.org/ogr/drv_mdb.html`
       EOS
     end
+    <<-EOS.undent
+    To expose gdal to python, etc., you need to symlink this formula with:
+    `brew link --force jctull/osgeo4mac/gdal`
+    EOS
   end
 
   test do
