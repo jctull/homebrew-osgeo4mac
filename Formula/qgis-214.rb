@@ -75,7 +75,6 @@ class Qgis214 < Formula
   # TODO: remove "pyspatialite" when PyPi package supports spatialite 4.x
   #       or DB Manager supports libspatialite >= 4.2.0 (with mod_spatialite)
   depends_on "pyspatialite" # for DB Manager
-  depends_on "qt-mysql" => :optional # for eVis plugin (non-functional in 2.x?)
 
   # core processing plugin extras
   # see `postgis` above
