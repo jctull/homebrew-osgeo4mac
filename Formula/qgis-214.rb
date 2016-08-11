@@ -29,7 +29,6 @@ class Qgis214 < Formula
   option "with-orfeo", "Build extra Orfeo Toolbox for Processing plugin"
   option "with-r", "Build extra R for Processing plugin"
   option "with-saga-gis", "Build extra Saga GIS for Processing plugin"
-  option "with-qt-mysql", "Build extra Qt MySQL plugin for eVis plugin"
   option "with-qspatialite", "Build QSpatialite Qt database driver"
   option "with-api-docs", "Build the API documentation with Doxygen and Graphviz"
   option "with-ninja", "Build with Ninja"
