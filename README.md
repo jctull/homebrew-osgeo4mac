@@ -1,3 +1,7 @@
+NOTE
+As of OS X 10.12 (Sierra), this fork has been abandoned.
+
+
 Homebrew-osgeo4mac
 ==================
 
